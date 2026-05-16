@@ -1,0 +1,6 @@
+[submodule "deps/libusb"]
+	path = deps/libusb
+	url = https://github.com/libusb/libusb.git
+[submodule "deps/hidapi"]
+	path = deps/hidapi
+	url = https://github.com/libusb/hidapi.git
