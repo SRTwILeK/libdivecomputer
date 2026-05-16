@@ -34,6 +34,50 @@ To uninstall libdivecomputer again, run:
 
   $ make uninstall
 
+Building on Windows x64 (MinGW)
+================================
+
+This fork includes a CMake build for Windows x64 using the MinGW-W64
+toolchain (tested with WinLibs GCC 16.x, UCRT).
+
+Prerequisites:
+
+  - WinLibs MinGW-W64: https://winlibs.com/
+    (extract to e.g. D:\work\winlibs\mingw64)
+  - CMake (included in the WinLibs bundle)
+
+The build requires two submodules (already initialized in this repo):
+
+  deps/libusb  -- libusb-1.0 (USB transport)
+  deps/hidapi  -- hidapi     (USBHID transport, Windows native HID API)
+
+After cloning, initialize the submodules:
+
+  $ git submodule update --init --recursive
+
+Then configure and build from a build directory:
+
+  $ mkdir build\mingw64 && cd build\mingw64
+  $ D:\work\winlibs\mingw64\bin\cmake.exe -G "MinGW Makefiles" ^
+      -DCMAKE_C_COMPILER=D:\work\winlibs\mingw64\bin\gcc.exe ^
+      -DCMAKE_RC_COMPILER=D:\work\winlibs\mingw64\bin\windres.exe ^
+      -DCMAKE_MAKE_PROGRAM=D:\work\winlibs\mingw64\bin\mingw32-make.exe ^
+      ..\..
+  $ D:\work\winlibs\mingw64\bin\mingw32-make.exe -j4
+
+Output artifacts in build\mingw64\:
+
+  libdivecomputer.dll      -- shared library (link against this at runtime)
+  liblibdivecomputer.dll.a -- import library (link against this at build time)
+
+Enabled transports in the Windows CMake build:
+
+  Serial    -- native Win32 serial port API
+  IrDA      -- Windows IrDA socket API (af_irda.h)
+  Bluetooth -- Windows Bluetooth RFCOMM socket API (ws2bth.h)
+  USB       -- libusb-1.0 (WinUSB + UsbDk backends, loaded dynamically)
+  USBHID    -- hidapi with native Windows HID API (hid.dll, loaded dynamically)
+
 Support
 =======
 
